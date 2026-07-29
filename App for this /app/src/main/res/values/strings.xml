@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Railone - UI</string>
+    <string name="website_url">https://akr-sm.vercel.app/</string>
+    <string name="offline_title">No Internet Connection</string>
+    <string name="offline_message">You are currently offline. Check your internet connection or tap retry below.</string>
+    <string name="btn_retry">Retry</string>
+
+    <!-- Notification channel -->
+    <string name="default_notification_channel_id">railone_ui_notifications</string>
+    <string name="default_notification_channel_name">Railone - UI Notifications</string>
+    <string name="default_notification_channel_desc">Notifications and updates from Railone - UI</string>
+
+    <!-- Permissions dialogs -->
+    <string name="permission_camera_rationale">Camera permission is required to upload photos and take pictures within the app.</string>
+    <string name="permission_audio_rationale">Microphone permission is required for voice and audio recording within the app.</string>
+    <string name="permission_location_rationale">Location permission is required for geolocation services.</string>
+    <string name="permission_notification_rationale">Notification permission is required to keep you updated with important alerts.</string>
+</resources>

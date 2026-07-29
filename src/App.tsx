@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MobileFrame } from './components/MobileFrame';
 import { Header } from './components/Header';
 import { BottomNav, TabType } from './components/BottomNav';
@@ -12,6 +12,13 @@ import { LoginScreen } from './components/LoginScreen';
 import { SearchTrainsModal, AddMoneyModal } from './components/InteractiveModals';
 import { createNewTicket } from './utils/ticketStorage';
 import { CheckCircle2 } from 'lucide-react';
+
+// Extend window to hold the Android back handler
+declare global {
+  interface Window {
+    androidBack?: () => boolean;
+  }
+}
 
 interface UserProfile {
   name: string;
@@ -45,6 +52,44 @@ export default function App() {
       setToastMessage(null);
     }, 3500);
   };
+
+  // Expose window.androidBack so the Android WebView can call it on back gesture.
+  // Returns true if we handled navigation, false if Android should close the app.
+  useEffect(() => {
+    window.androidBack = (): boolean => {
+      // Priority: deepest screen first
+      if (selectedTicket) {
+        setSelectedTicket(null);
+        return true;
+      }
+      if (bookingScreenType) {
+        setBookingScreenType(null);
+        return true;
+      }
+      if (isDrawerOpen) {
+        setIsDrawerOpen(false);
+        return true;
+      }
+      if (searchModalOpen) {
+        setSearchModalOpen(false);
+        return true;
+      }
+      if (addMoneyModalOpen) {
+        setAddMoneyModalOpen(false);
+        return true;
+      }
+      if (activeTab !== 'home') {
+        setActiveTab('home');
+        return true;
+      }
+      // Already at home with nothing open — let Android close the app
+      return false;
+    };
+
+    return () => {
+      window.androidBack = undefined;
+    };
+  }, [selectedTicket, bookingScreenType, isDrawerOpen, searchModalOpen, addMoneyModalOpen, activeTab]);
 
   const handleLoginSuccess = (name: string, phone: string) => {
     const profile = { name, phone };

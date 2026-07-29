@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "/home/prince/.gradle/daemon/8.12/com.akr.sm.app-mergeDebugResources-38:/layout/activity_main.xml",
+        "source": "/home/prince/.gradle/daemon/8.12/com.akr.sm.app-main-41:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.akr.sm.app-mergeDebugResources-38:/layout/activity_main.xml",
+        "source": "com.akr.sm.app-main-41:/layout/activity_main.xml"
+    },
+    {
+        "merged": "/home/prince/.gradle/daemon/8.12/com.akr.sm.app-mergeDebugResources-38:/layout/layout_offline.xml",
+        "source": "/home/prince/.gradle/daemon/8.12/com.akr.sm.app-main-41:/layout/layout_offline.xml"
+    }
+]
