@@ -74,3 +74,21 @@
 .transition-drawer {
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* Rolling digit timer animation matching UTS dynamic ticket preview */
+@keyframes slideUp {
+  0% {
+    transform: translateY(40%);
+    opacity: 0.3;
+    filter: blur(1px);
+  }
+  100% {
+    transform: translateY(0%);
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

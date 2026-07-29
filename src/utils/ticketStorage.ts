@@ -73,6 +73,23 @@ export function getRouteDistanceAndFare(fromStation: string, toStation: string, 
 
 export const initialDefaultTickets: TicketData[] = [
   {
+    id: 't_active_1',
+    type: 'Unreserved',
+    codeType: 'UTS',
+    code: 'XA3PEF1047',
+    ticketCategory: 'JOURNEY',
+    bookingDate: 'Wed, 29 Jul 26',
+    fromStation: 'GUINDY',
+    toStation: 'POTHERI',
+    distanceOrTime: '29 km',
+    passengers: '1 Adult , 0 Child',
+    classDetails: 'SECOND | ORDINARY | JOURNEY',
+    fare: '₹10.00',
+    bookedTimestamp: '2026-07-29 09:15:22',
+    expiryTimestamp: Date.now() + 3600000 * 12, // Active for 12 hours
+    status: 'Upcoming'
+  },
+  {
     id: 't1',
     type: 'Unreserved',
     codeType: 'UTS',
@@ -155,7 +172,14 @@ export function getSavedTickets(): TicketData[] {
       localStorage.setItem(TICKET_STORAGE_KEY, JSON.stringify(initialDefaultTickets));
       return initialDefaultTickets;
     }
-    const tickets: TicketData[] = JSON.parse(raw);
+    let tickets: TicketData[] = JSON.parse(raw);
+
+    // If local storage only has old expired tickets and is missing the active sample ticket, reset to initialDefaultTickets
+    const hasActiveTicket = tickets.some(t => t.status === 'Upcoming' || t.status === 'Active');
+    if (!hasActiveTicket && tickets.length <= 3) {
+      tickets = initialDefaultTickets;
+      localStorage.setItem(TICKET_STORAGE_KEY, JSON.stringify(initialDefaultTickets));
+    }
 
     const now = Date.now();
     return tickets.map((t) => {

@@ -30,7 +30,7 @@ export default function App() {
     }
   });
 
-  const [activeTab, setActiveTab] = useState<TabType>('bookings');
+  const [activeTab, setActiveTab] = useState<TabType>('home');
   const [bookingFilterTab, setBookingFilterTab] = useState<'upcoming' | 'completed' | 'cancelled' | 'all'>('upcoming');
   const [selectedTicket, setSelectedTicket] = useState<TicketData | null>(null);
   const [bookingScreenType, setBookingScreenType] = useState<'Unreserved' | 'Reserved' | 'Platform' | null>(null);
@@ -55,7 +55,7 @@ export default function App() {
       console.error(e);
     }
     showToast(`Welcome to RailOne, ${name}!`);
-    setActiveTab('bookings');
+    setActiveTab('home');
   };
 
   const handleLogout = () => {
@@ -118,7 +118,7 @@ export default function App() {
         ) : (
           <>
             {/* Render Top Header (Aअ Logo, RailOne, Bell Badge 5) */}
-            {!selectedTicket && !bookingScreenType && (
+            {!selectedTicket && !bookingScreenType && activeTab !== 'bookings' && (
               <Header 
                 onLanguageClick={() => showToast('Language switched to English / हिन्दी')}
                 onNotificationClick={() => showToast('You have 5 unread notifications')}
@@ -171,7 +171,7 @@ export default function App() {
             )}
 
             {/* Bottom Navigation Bar */}
-            {!selectedTicket && !bookingScreenType && (
+            {!selectedTicket && !bookingScreenType && activeTab !== 'bookings' && (
               <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
             )}
 
