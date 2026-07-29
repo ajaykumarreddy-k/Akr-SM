@@ -289,18 +289,16 @@ class MainActivity : AppCompatActivity() {
                 binding.progressBar.visibility = View.GONE
                 binding.swipeRefreshLayout.isRefreshing = false
 
-                // Seed the navStack with the initial page URL on first load
-                if (navStack.isEmpty() && url != null) {
-                    navStack.addLast(url)
-                    android.util.Log.d("AKR_NAV", "INIT: $url")
-                }
-
-                // Inject JS bridge interceptor for React Router pushState.
-                // Runs on every page load (idempotent via __akrBridgeInstalled flag).
+                // Inject the JS NavBridge interceptor for React Router pushState.
+                // Also inject a fallback androidBack() if the website hasn't defined one yet
+                // (i.e. before the updated website is deployed to Vercel).
+                // This fallback works by detecting the visible DOM state of the React app.
                 view?.evaluateJavascript("""
                     (function() {
                         if (window.__akrBridgeInstalled) return;
                         window.__akrBridgeInstalled = true;
+
+                        // Intercept pushState for URL-based SPAs
                         var origPush = history.pushState.bind(history);
                         history.pushState = function(state, title, url) {
                             origPush(state, title, url);
@@ -309,6 +307,41 @@ class MainActivity : AppCompatActivity() {
                         window.addEventListener('popstate', function() {
                             try { window.AndroidNav.onPop(); } catch(e) {}
                         });
+
+                        // Fallback androidBack: if the React app hasn't exposed
+                        // window.androidBack yet, synthesize back navigation by
+                        // finding and clicking the visible back/close button in the DOM.
+                        if (!window.androidBack) {
+                            window.androidBack = function() {
+                                // 1. Try any visible button with aria-label or text containing 'back'/'close'
+                                var selectors = [
+                                    'button[aria-label*="back" i]',
+                                    'button[aria-label*="close" i]',
+                                    '[data-testid*="back"]',
+                                    '[data-testid*="close"]'
+                                ];
+                                for (var i = 0; i < selectors.length; i++) {
+                                    var el = document.querySelector(selectors[i]);
+                                    if (el && el.offsetParent !== null) {
+                                        el.click();
+                                        return true;
+                                    }
+                                }
+                                // 2. Try SVG back arrow buttons (ChevronLeft, ArrowLeft icons)
+                                var allBtns = document.querySelectorAll('button, [role="button"]');
+                                for (var j = 0; j < allBtns.length; j++) {
+                                    var btn = allBtns[j];
+                                    if (btn.offsetParent === null) continue;
+                                    var svg = btn.querySelector('svg');
+                                    if (svg && (btn.getAttribute('aria-label') || btn.textContent || '').toLowerCase().match(/back|close|return/)) {
+                                        btn.click();
+                                        return true;
+                                    }
+                                }
+                                // 3. No back button found - at root, let Android handle
+                                return false;
+                            };
+                        }
                     })();
                 """.trimIndent(), null)
             }
